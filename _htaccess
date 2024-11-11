@@ -1,0 +1,20 @@
+<FilesMatch "\.txt$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.py$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<Files "poll_database.db">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+RewriteEngine On
+# Check if the request method is HEAD
+RewriteCond %{REQUEST_METHOD} ^HEAD$
+# Redirect to the specific page
+RewriteRule ^.*$ /hello.html [R=301,L]
