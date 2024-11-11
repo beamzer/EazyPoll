@@ -11,7 +11,7 @@ If the user clicks one of the URLs, it will record the vote and the time of the 
 - Change ```easypoll.py``` so that the mailserver info is correct for your environment to send out e-mail
 - Default the mail functionality is commented out, so you can do a dry run first
 - Change passwords on ```results.php``` and ```results_email.php``` so that you are the only one with access
-- Change ```_htaccess``` to ```.htaccess``` and make sure your webserver interprets this file correctly
+- Change ```_htaccess``` to ```.htaccess``` and make sure your webserver interprets this file correctly, so try to open recipients.txt through your webbrowser and verify that access is denied. With security settings, always test, never assumen!
 - Make sure mod_rewrite is active in Apache. We use mod_rewrite to prevent Microsoft ATP SafeLinks from voting for us
 - Do a dry run, copy one of the generated URLs into the address bar of your browser and see if the vote gets cast
 - Do a whet run, remove ```poll_database.db``` and fill ```recipients.txt``` with one or two email adresses that you have access to. Remove the comments in ```eazypoll.py``` so that it will send out mails when run, modify the e-mail text in the cody to your liking and run the code
