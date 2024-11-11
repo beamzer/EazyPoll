@@ -1,6 +1,6 @@
 # EazyPoll
 
-## Simple poll website, sending out polls via emails and recording votes cast by clicking links
+## Simple poll website, sending out polls via emails. Recipients can vote by clicking the link with the desired answer
 
 EazyPoll is a very simple poll software. ```eazypoll.py``` reads the file ```recipients.txt``` and creates a unique token for each recipient, storing this in a newly created SQLite database (```poll_database.db```). It then sends each recipient an email with two (or more) URLs - one for "Yes" and one for "No" (this can be easily modified if needed).
 
