@@ -18,5 +18,5 @@ If the user clicks one of the URLs, it will record the vote and the time of the 
 - If it's really important that things go well, or when using a large list of recipients, I would recommend to do the step above again with some friends and/or collegues
 - Prepare for the real run, remove ```poll_database.db```, fill ```recipients.txt```  with the real recipients and sit back and relax
 
-The screenshot below shows what the user sees after voting:
+The screenshot below shows what the user sees after the voting url:
 <img width="977" alt="screenshot" src="https://github.com/user-attachments/assets/066849ab-3df5-4b7e-ab07-5a8ab8988aff">
