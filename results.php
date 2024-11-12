@@ -26,12 +26,11 @@ try {
     $yes_percentage = $total_votes > 0 ? round(($yes_votes / $total_votes) * 100, 1) : 0;
     $no_percentage = $total_votes > 0 ? round(($no_votes / $total_votes) * 100, 1) : 0;
 
-    // Get detailed results
-    $results = $db->query("SELECT token, vote, voted_at FROM polls ORDER BY voted_at DESC");
+    // Get detailed results - only for registered votes
+    $results = $db->query("SELECT token, vote, voted_at FROM polls WHERE vote IS NOT NULL ORDER BY voted_at DESC");
     if (!$results) {
         throw new Exception("Failed to execute query: " . $db->lastErrorMsg());
     }
-
 
     // Display results
     ?>
@@ -99,40 +98,40 @@ try {
                 </div>
             </div>
 
-             <h3>No Votes: <?php echo $no_votes; ?> (<?php echo $no_percentage; ?>%)</h3>
-             <div class="progress-bar">
-                 <div class="progress no-progress" style="width: <?php echo $no_percentage; ?>%">
-                     <?php echo $no_percentage; ?>%
-                 </div>
-             </div>
-         </div>
+            <h3>No Votes: <?php echo $no_votes; ?> (<?php echo $no_percentage; ?>%)</h3>
+            <div class="progress-bar">
+                <div class="progress no-progress" style="width: <?php echo $no_percentage; ?>%">
+                    <?php echo $no_percentage; ?>%
+                </div>
+            </div>
+        </div>
 
-         <h2>Detailed Results</h2>
-         <table>
-             <tr>
-                 <th>Token</th>
-                 <th>Vote</th>
-                 <th>Voted At</th>
-             </tr>
-             <?php while ($row = $results->fetchArray(SQLITE3_ASSOC)) { ?>
-                 <tr>
-                     <td><?php echo htmlspecialchars($row['token']); ?></td>
-                     <td><?php echo htmlspecialchars($row['vote']); ?></td>
-                     <td><?php echo htmlspecialchars($row['voted_at']); ?></td>
-                 </tr>
-             <?php } ?>
-         </table>
-     </body>
-     </html>
+        <h2>Detailed Results (<?php echo $total_votes; ?> registered votes)</h2>
+        <table>
+            <tr>
+                <th>Token</th>
+                <th>Vote</th>
+                <th>Voted At</th>
+            </tr>
+            <?php while ($row = $results->fetchArray(SQLITE3_ASSOC)) { ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['token']); ?></td>
+                    <td><?php echo htmlspecialchars($row['vote']); ?></td>
+                    <td><?php echo htmlspecialchars($row['voted_at']); ?></td>
+                </tr>
+            <?php } ?>
+        </table>
+    </body>
+    </html>
 
     <?php
     // Close database connection
     $db->close();
     ?>
 
- <?php
- }
- catch (Exception $e) {
-     echo 'Error: ' . $e->getMessage();
- }
- ?>
+<?php
+}
+catch (Exception $e) {
+    echo 'Error: ' . $e->getMessage();
+}
+?>
