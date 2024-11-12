@@ -5,11 +5,16 @@ try {
 
     // Get parameters
     $token = $_GET['token'];
-    $vote = $_GET['vote'];
+    $vote = strtolower($_GET['vote']); // Convert to lowercase for consistent comparison
 
-    // Validate parameters
-    if (empty($token) || !in_array($vote, ['yes', 'no'])) {
-        throw new Exception('Invalid parameters');
+    // Validate token
+    if (empty($token)) {
+        throw new Exception('Invalid token');
+    }
+
+    // Validate vote value
+    if ($vote !== 'yes' && $vote !== 'no') {
+        throw new Exception('Illegal vote value. Only "yes" or "no" are allowed.');
     }
 
     // Check if token exists and hasn't been used
@@ -57,7 +62,7 @@ try {
           <body>
               <div class='message'>
                   <h2>Thank you for your vote!</h2>
-		  <p>Your response has been recorded.</p>
+                  <p>Your response has been recorded.</p>
                   <p>redirecting you to the results page....</p>
               </div>
           </body>
