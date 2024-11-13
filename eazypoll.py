@@ -3,6 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 import uuid
 from datetime import datetime
+import configparser
 
 def read_email_list(filename):
     try:
@@ -29,15 +30,24 @@ def create_database():
     conn.commit()
     conn.close()
 
-def generate_and_send_emails(email_list, question):
+def read_config():
+    config = configparser.ConfigParser()
+    try:
+        config.read('config.ini')
+        return config
+    except Exception as e:
+        print(f'Error reading configuration: {str(e)}')
+        exit(1)
+
+def generate_and_send_emails(email_list, question, config):
     conn = sqlite3.connect('poll_database.db')
     c = conn.cursor()
 
-    # Email settings
-    smtp_server = "smtp.your_server.com"
-    smtp_port = 587
-    smtp_username = "your_email@domain.com"
-    smtp_password = "your_password"
+    # Email settings from config
+    smtp_server = config['email']['smtp_server']
+    smtp_port = config['email']['smtp_port']
+    smtp_username = config['email']['smtp_username']
+    smtp_password = config['email']['smtp_password']
 
     try:
         # Connect to SMTP server
@@ -46,7 +56,7 @@ def generate_and_send_emails(email_list, question):
         ## server.starttls()
         ## server.login(smtp_username, smtp_password)
 
-        base_url = "https://myserver/eazypoll/vote.php?token="
+        base_url = config['poll']['base_url']
 
         total_emails = len(email_list)
         print(f"Sending emails to {total_emails} recipients...")
@@ -74,7 +84,7 @@ def generate_and_send_emails(email_list, question):
             print(f"Yes URL = {base_url}{token}&vote=yes")
             print(f"No URL = {base_url}{token}&vote=no")
             msg = MIMEText(html_content, 'html')
-            msg['Subject'] = "Poll Question"
+            msg['Subject'] = config['poll']['email_subject']
             msg['From'] = smtp_username
             msg['To'] = email
 
@@ -94,8 +104,11 @@ def generate_and_send_emails(email_list, question):
         print(f"")
 
 def main():
-    # File containing email addresses (one per line)
-    email_file = "recipients.txt"
+    # Read configuration
+    config = read_config()
+    
+    # Get email file path from config
+    email_file = config['files']['recipients_file']
 
     # Read email addresses from file
     print(f"Reading email addresses from {email_file}...")
@@ -108,7 +121,7 @@ def main():
     create_database()
 
     # Generate and send emails
-    generate_and_send_emails(email_list, question)
+    generate_and_send_emails(email_list, question, config)
 
     print("Process completed!")
 
