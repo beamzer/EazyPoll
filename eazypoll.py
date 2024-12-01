@@ -48,7 +48,9 @@ def generate_and_send_emails(email_list, question, config):
     smtp_port = config['email']['smtp_port']
     smtp_username = config['email']['smtp_username']
     smtp_password = config['email']['smtp_password']
-    smtp_from = config['email']['smtp_from']
+    smtp_from_email = config['email']['smtp_username']  # Use authenticated email as sender
+    smtp_from_name = config['email']['smtp_from_name']
+    formatted_from = f"{smtp_from_name} <{smtp_from_email}>"
 
     try:
         # Connect to SMTP server
@@ -86,7 +88,7 @@ def generate_and_send_emails(email_list, question, config):
             print(f"No URL = {base_url}{token}&vote=no")
             msg = MIMEText(html_content, 'html')
             msg['Subject'] = config['poll']['email_subject']
-            msg['From'] = smtp_from
+            msg['From'] = formatted_from
             msg['To'] = email
 
             # Send email
