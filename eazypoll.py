@@ -48,11 +48,12 @@ def generate_and_send_emails(email_list, question, config):
     smtp_port = config['email']['smtp_port']
     smtp_username = config['email']['smtp_username']
     smtp_password = config['email']['smtp_password']
+    smtp_from = config['email']['smtp_from']
 
     try:
         # Connect to SMTP server
         print("Connecting to SMTP server...")
-        ## server = smtplib.SMTP(smtp_server, smtp_port)
+        server = smtplib.SMTP(smtp_server, smtp_port)
         ## server.starttls()
         ## server.login(smtp_username, smtp_password)
 
@@ -85,11 +86,11 @@ def generate_and_send_emails(email_list, question, config):
             print(f"No URL = {base_url}{token}&vote=no")
             msg = MIMEText(html_content, 'html')
             msg['Subject'] = config['poll']['email_subject']
-            msg['From'] = smtp_username
+            msg['From'] = smtp_from
             msg['To'] = email
 
             # Send email
-            ### server.send_message(msg)
+            server.send_message(msg)
             print(f"Sent email {index}/{total_emails} to {email} with token: {token}\n")
 
             # Commit after each successful send
