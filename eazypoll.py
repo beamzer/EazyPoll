@@ -36,16 +36,20 @@ def generate_and_send_emails(question, config):
 
         base_url = config['poll']['base_url']
 
-        total_emails = len(email_list)
+        # Get all emails from database that don't have a token yet
+        c.execute("SELECT email FROM polls WHERE token IS NULL")
+        emails = c.fetchall()
+        
+        total_emails = len(emails)
         print(f"Sending emails to {total_emails} recipients...")
 
-        for index, email in enumerate(email_list, 1):
+        for index, (email,) in enumerate(emails, 1):
             # Generate unique token
             token = str(uuid.uuid4())
 
-            # Store in database
-            c.execute("INSERT INTO polls (token, email, created_at) VALUES (?, ?, ?)",
-                     (token, email, datetime.now()))
+            # Update database with token
+            c.execute("UPDATE polls SET token = ? WHERE email = ? AND token IS NULL",
+                     (token, email))
 
             # Create email message
             html_content = f"""
