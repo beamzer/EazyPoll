@@ -5,31 +5,6 @@ import uuid
 from datetime import datetime
 import configparser
 
-def read_email_list(filename):
-    try:
-        with open(filename, 'r') as file:
-            # Read lines and remove whitespace, empty lines
-            emails = [line.strip() for line in file if line.strip()]
-        return emails
-    except FileNotFoundError:
-        print(f"Error: File '{filename}' not found.")
-        exit(1)
-    except Exception as e:
-        print(f"Error reading file: {str(e)}")
-        exit(1)
-
-def create_database():
-    conn = sqlite3.connect('poll_database.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS polls
-                 (token TEXT PRIMARY KEY,
-                  email TEXT,
-                  vote TEXT,
-                  voted_at DATETIME,
-                  created_at DATETIME)''')
-    conn.commit()
-    conn.close()
-
 def read_config():
     config = configparser.ConfigParser()
     try:
@@ -39,7 +14,7 @@ def read_config():
         print(f'Error reading configuration: {str(e)}')
         exit(1)
 
-def generate_and_send_emails(email_list, question, config):
+def generate_and_send_emails(question, config):
     conn = sqlite3.connect('poll_database.db')
     c = conn.cursor()
 
@@ -109,22 +84,12 @@ def generate_and_send_emails(email_list, question, config):
 def main():
     # Read configuration
     config = read_config()
-    
-    # Get email file path from config
-    email_file = config['files']['recipients_file']
-
-    # Read email addresses from file
-    print(f"Reading email addresses from {email_file}...")
-    email_list = read_email_list(email_file)
 
     # Your poll question
     question = "Do you approve this proposal?"
 
-    # Create database if it doesn't exist
-    create_database()
-
     # Generate and send emails
-    generate_and_send_emails(email_list, question, config)
+    generate_and_send_emails(question, config)
 
     print("Process completed!")
 
