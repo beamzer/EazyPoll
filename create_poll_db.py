@@ -1,6 +1,7 @@
 import sqlite3
 import configparser
 from datetime import datetime
+import uuid
 
 def read_email_list(filename):
     try:
@@ -56,8 +57,9 @@ def initialize_database():
 
     try:
         for email in email_list:
-            c.execute("INSERT INTO polls (email, created_at) VALUES (?, ?)",
-                     (email, datetime.now()))
+            token = str(uuid.uuid4())
+            c.execute("INSERT INTO polls (email, token, created_at) VALUES (?, ?, ?)",
+                     (email, token, datetime.now()))
         conn.commit()
         print(f"Successfully initialized database with {len(email_list)} email addresses")
     except Exception as e:

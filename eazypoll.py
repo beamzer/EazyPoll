@@ -1,7 +1,6 @@
 import sqlite3
 import smtplib
 from email.mime.text import MIMEText
-import uuid
 from datetime import datetime
 import configparser
 
@@ -36,20 +35,14 @@ def generate_and_send_emails(question, config):
 
         base_url = config['poll']['base_url']
 
-        # Get all emails from database that don't have a token yet
-        c.execute("SELECT email FROM polls WHERE token IS NULL")
-        emails = c.fetchall()
+        # Get all emails and tokens from database
+        c.execute("SELECT email, token FROM polls")
+        records = c.fetchall()
         
-        total_emails = len(emails)
+        total_emails = len(records)
         print(f"Sending emails to {total_emails} recipients...")
 
-        for index, (email,) in enumerate(emails, 1):
-            # Generate unique token
-            token = str(uuid.uuid4())
-
-            # Update database with token
-            c.execute("UPDATE polls SET token = ? WHERE email = ? AND token IS NULL",
-                     (token, email))
+        for index, (email, token) in enumerate(records, 1):
 
             # Create email message
             html_content = f"""
