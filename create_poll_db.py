@@ -23,8 +23,7 @@ def create_database():
                  (token TEXT PRIMARY KEY,
                   email TEXT,
                   vote TEXT,
-                  voted_at DATETIME,
-                  created_at DATETIME)''')
+                  voted_at DATETIME)''')
     conn.commit()
     conn.close()
 
@@ -58,8 +57,8 @@ def initialize_database():
     try:
         for email in email_list:
             token = str(uuid.uuid4())
-            c.execute("INSERT INTO polls (email, token, created_at) VALUES (?, ?, ?)",
-                     (email, token, datetime.now()))
+            c.execute("INSERT INTO polls (email, token) VALUES (?, ?)",
+                     (email, token))
         conn.commit()
         print(f"Successfully initialized database with {len(email_list)} email addresses")
     except Exception as e:
