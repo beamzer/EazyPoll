@@ -3,6 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 import configparser
+import time
 
 def read_config():
     config = configparser.ConfigParser()
@@ -46,18 +47,18 @@ def generate_and_send_emails(question, config):
 
             # Create email message
             html_content = f"""
-            <html>
-            <body>
-            <h2>{question}</h2>
-            <p>Please click one of the following options to vote:</p>
-            <p><a href="{base_url}{token}&vote=yes">Yes</a></p>
-            <p><a href="{base_url}{token}&vote=no">No</a></p>
-            </body>
-            </html>
+<html>
+<body>
+<h2>{question}</h2>
+<p>Please click one of the following options to vote:</p>
+<p><a href="{base_url}{token}&vote=yes">Yes</a></p>
+<p><a href="{base_url}{token}&vote=no">No</a></p>
+</body>
+</html>
             """
 
-            print(f"Yes URL = {base_url}{token}&vote=yes")
-            print(f"No URL = {base_url}{token}&vote=no")
+            # print(f"Yes URL = {base_url}{token}&vote=yes")
+            # print(f"No URL = {base_url}{token}&vote=no")
             msg = MIMEText(html_content, 'html')
             msg['Subject'] = config['poll']['email_subject']
             msg['From'] = formatted_from
@@ -65,7 +66,8 @@ def generate_and_send_emails(question, config):
 
             # Send email
             server.send_message(msg)
-            print(f"Sent email {index}/{total_emails} to {email} with token: {token}\n")
+            print(f"Sent email {index}/{total_emails} to {email} with token: {token}")
+            time.sleep(0.100)
 
             # Commit after each successful send
             conn.commit()
