@@ -4,6 +4,12 @@
 
 EazyPoll is a very simple poll software. ```eazypoll.py``` reads the file ```recipients.txt``` and creates a unique token for each recipient, storing this in a newly created SQLite database (```poll_database.db```). It then sends each recipient an email with two (or more) URLs - one for "Yes" and one for "No" (this can be easily modified if needed).
 
+```show_db.py``` can be used to show the contents of the poll database after it has been created with ```python3 create_poll_db.py```
+
+```results.php```shows an overview of all the tokens that have allready voted, and what their votest were. You can use this to give an anonymized overview of the votes
+
+```results_email.php```shows an overview of all the e-mail addresses that have allready voted, and what their votest were. You can use this to give a complet overview of the votes
+
 If the user clicks one of the URLs, it will record the vote and the time of the vote for that specific user/token. Once the vote is recorded, that token cannot be used again for voting, so only the first vote counts. After the vote is recorded via ```vote.php```, the user will be redirected to ```myresults.php``` where the total of all "Yes" and "No" votes is shown, as well as how many votes are still pending. The user's own vote (Yes or No) and the time it was cast are also displayed, serving as a way to check that the right vote information was recorded.
 - To use, copy all files to the webserver in a directory eazypoll (or modify to your needs)
 - Fill ```recipients.txt``` with the e-mail addresses of the people that are going to vote, one per line
