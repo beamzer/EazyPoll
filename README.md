@@ -88,10 +88,10 @@ Transfer `poll_database.db` to your web server and access:
 - **`show_db.py`** - Displays current database contents
 
 ### Web Files (for server)
-- **`vote.php`** - Processes incoming votes and redirects to results
+- **`vote.php`** - Processes incoming votes and redirects to myresults
+- **`myresults.php`** - Shows individual vote confirmation and totals
 - **`results.php`** - Shows anonymous voting results and statistics
 - **`results_email.php`** - Shows voting results with email addresses
-- **`myresults.php`** - Shows individual vote confirmation and totals
 
 ### Configuration Files
 - **`config.ini`** - Main configuration (email, poll settings, file paths)
