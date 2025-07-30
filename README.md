@@ -100,7 +100,7 @@ Transfer `poll_database.db` to your web server and access:
 
 ## Security Features
 
-- **One Vote Per Token**: Each recipient gets exactly one vote, this prevents re-using a token that is sniffed from the network. Also is the token is used before the intended recipient can use the token, he of she will get an error and can inquire with the organizer what happened.
+- **One Vote Per Token**: Each recipient gets exactly one vote, this prevents re-using a token that is sniffed from the network. Also if the token is used before the intended recipient can use the token to vote, he of she will get an error and can inquire with the organizer what happened.
 - **Token Expiration**: Tokens become invalid after voting
 - **Secure Links**: Unique, non-guessable voting URLs
 - **Anonymous Options**: Results can be displayed without email addresses
