@@ -25,7 +25,12 @@ def generate_and_send_emails(question, config):
     smtp_password = config['email']['smtp_password']
     smtp_from_email = config['email']['smtp_username']  # Use authenticated email as sender
     smtp_from_name = config['email']['smtp_from_name']
+    smtp_replyto = config['email']['smtp_replyto']
     formatted_from = f"{smtp_from_name} <{smtp_from_email}>"
+
+    # Read question and body text from config
+    question = config['poll']['question']
+    body_text = config['poll']['body_text']
 
     try:
         # Connect to SMTP server
@@ -50,7 +55,7 @@ def generate_and_send_emails(question, config):
 <html>
 <body>
 <h2>{question}</h2>
-<p>Please click one of the following options to vote:</p>
+<p>{body_text}</p>
 <p><a href="{base_url}{token}&vote=yes">Yes</a></p>
 <p><a href="{base_url}{token}&vote=no">No</a></p>
 </body>
@@ -63,6 +68,7 @@ def generate_and_send_emails(question, config):
             msg['Subject'] = config['poll']['email_subject']
             msg['From'] = formatted_from
             msg['To'] = email
+            msg['Reply-To'] = smtp_replyto
 
             # Send email
             server.send_message(msg)
