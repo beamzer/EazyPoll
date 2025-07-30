@@ -2,6 +2,7 @@ import sqlite3
 import configparser
 from datetime import datetime
 import uuid
+import os
 
 def read_email_list(filename):
     try:
@@ -36,7 +37,37 @@ def read_config():
         print(f'Error reading configuration: {str(e)}')
         exit(1)
 
+def check_existing_database():
+    """Check if poll_database.db exists and handle accordingly"""
+    db_file = 'poll_database.db'
+    
+    if os.path.exists(db_file):
+        print(f"Warning: Database file '{db_file}' already exists!")
+        print("This will delete all existing poll data including any votes that may have been cast.")
+        
+        while True:
+            response = input("Do you want to remove the existing database and create a new one? (y/n): ").lower().strip()
+            
+            if response in ['y', 'yes']:
+                try:
+                    os.remove(db_file)
+                    print(f"Existing database '{db_file}' has been removed.")
+                    return True
+                except Exception as e:
+                    print(f"Error removing database file: {str(e)}")
+                    exit(1)
+            elif response in ['n', 'no']:
+                print("Operation aborted. Existing database preserved.")
+                exit(0)
+            else:
+                print("Please enter 'y' for yes or 'n' for no.")
+    
+    return True
+
 def initialize_database():
+    # Check for existing database and handle accordingly
+    check_existing_database()
+    
     # Read configuration
     config = read_config()
     
