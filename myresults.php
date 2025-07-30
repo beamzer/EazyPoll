@@ -96,6 +96,21 @@ try {
                 margin: 20px auto;
                 text-align: center;
             }
+            .footer {
+                margin-top: 40px;
+                padding: 20px;
+                border-top: 1px solid #ddd;
+                text-align: center;
+                color: #666;
+                font-size: 0.9em;
+            }
+            .footer a {
+                color: #337ab7;
+                text-decoration: none;
+            }
+            .footer a:hover {
+                text-decoration: underline;
+            }
         </style>
     </head>
     <body>
@@ -136,6 +151,11 @@ try {
                 </tr>
             <?php } ?>
         </table>
+
+        <div class="footer">
+            <p>Powered by <strong>EazyPoll</strong> - Open source polling software</p>
+            <p>Source code available at: <a href="https://github.com/beamzer/EazyPoll" target="_blank">https://github.com/beamzer/EazyPoll</a></p>
+        </div>
     </body>
     </html>
 
@@ -169,12 +189,32 @@ catch (Exception $e) {
                 margin: 20px auto;
                 text-align: center;
             }
+            .footer {
+                margin-top: 40px;
+                padding: 20px;
+                border-top: 1px solid #ddd;
+                text-align: center;
+                color: #666;
+                font-size: 0.9em;
+            }
+            .footer a {
+                color: #337ab7;
+                text-decoration: none;
+            }
+            .footer a:hover {
+                text-decoration: underline;
+            }
         </style>
     </head>
     <body>
         <div class="error">
             <h2>Error</h2>
             <p><?php echo htmlspecialchars($e->getMessage()); ?></p>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <strong>EazyPoll</strong> - Open source polling software</p>
+            <p>Source code available at: <a href="https://github.com/beamzer/EazyPoll" target="_blank">https://github.com/beamzer/EazyPoll</a></p>
         </div>
     </body>
     </html>
