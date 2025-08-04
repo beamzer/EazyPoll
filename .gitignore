@@ -1,4 +1,5 @@
 .aider*
 .env
 poll_database.db
+config.ini
 ARCHIVE/
