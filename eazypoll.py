@@ -55,7 +55,8 @@ def generate_and_send_emails(config, send_to_all=False, is_reminder=False):
         reminder_body = config.get('poll', 'reminder_body_text', fallback=None)
         if reminder_body:
             body_text = reminder_body
-            print("Using reminder body text from config...")
+            print("Using reminder body text from config:")
+            print(f"" {body_text})
 
     try:
         # Connect to SMTP server
