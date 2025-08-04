@@ -4,6 +4,8 @@ from email.mime.text import MIMEText
 from datetime import datetime
 import configparser
 import time
+import argparse
+import sys
 
 def read_config():
     config = configparser.ConfigParser()
@@ -14,10 +16,26 @@ def read_config():
         print(f'Error reading configuration: {str(e)}')
         exit(1)
 
-def generate_and_send_emails(question, config):
+def get_recipients(send_to_all=False):
+    """Get recipients based on whether to send to all or only non-voters"""
     conn = sqlite3.connect('poll_database.db')
     c = conn.cursor()
+    
+    if send_to_all:
+        # Send to all recipients
+        c.execute("SELECT email, token FROM polls")
+        print("Sending to ALL recipients...")
+    else:
+        # Send only to those who haven't voted yet (vote is NULL)
+        c.execute("SELECT email, token FROM polls WHERE vote IS NULL")
+        print("Sending reminders to recipients who haven't voted yet...")
+    
+    records = c.fetchall()
+    conn.close()
+    
+    return records
 
+def generate_and_send_emails(config, send_to_all=False, is_reminder=False):
     # Email settings from config
     smtp_server = config['email']['smtp_server']
     smtp_port = config['email']['smtp_port']
@@ -31,6 +49,13 @@ def generate_and_send_emails(question, config):
     # Read question and body text from config
     question = config['poll']['question']
     body_text = config['poll']['body_text']
+    
+    # Use reminder text if available and this is a reminder
+    if is_reminder and not send_to_all:
+        reminder_body = config.get('poll', 'reminder_body_text', fallback=None)
+        if reminder_body:
+            body_text = reminder_body
+            print("Using reminder body text from config...")
 
     try:
         # Connect to SMTP server
@@ -41,16 +66,24 @@ def generate_and_send_emails(question, config):
 
         base_url = config['poll']['base_url']
 
-        # Get all emails and tokens from database
-        c.execute("SELECT email, token FROM polls")
-        records = c.fetchall()
+        # Get recipients based on parameters
+        records = get_recipients(send_to_all)
+        
+        if not records:
+            if send_to_all:
+                print("No recipients found in database!")
+            else:
+                print("Great! All recipients have already voted. No reminders needed.")
+            return
         
         total_emails = len(records)
-        print(f"Sending emails to {total_emails} recipients...")
+        email_type = "emails" if send_to_all else "reminder emails"
+        print(f"Sending {email_type} to {total_emails} recipients...")
 
         for index, (email, token) in enumerate(records, 1):
-
             # Create email message
+            subject_prefix = "REMINDER: " if (is_reminder and not send_to_all) else ""
+            
             html_content = f"""
 <html>
 <body>
@@ -62,41 +95,122 @@ def generate_and_send_emails(question, config):
 </html>
             """
 
-            # print(f"Yes URL = {base_url}{token}&vote=yes")
-            # print(f"No URL = {base_url}{token}&vote=no")
             msg = MIMEText(html_content, 'html')
-            msg['Subject'] = config['poll']['email_subject']
+            msg['Subject'] = subject_prefix + config['poll']['email_subject']
             msg['From'] = formatted_from
             msg['To'] = email
             msg['Reply-To'] = smtp_replyto
 
             # Send email
             server.send_message(msg)
-            print(f"Sent email {index}/{total_emails} to {email} with token: {token}")
+            action = "email" if send_to_all else "reminder"
+            print(f"Sent {action} {index}/{total_emails} to {email} with token: {token}")
             time.sleep(0.100)
-
-            # Commit after each successful send
-            conn.commit()
 
     except Exception as e:
         print(f"Error sending emails: {str(e)}")
-        conn.rollback()
     finally:
         #server.quit()
-        #conn.close()
         print(f"")
 
+def show_voting_status():
+    """Show current voting statistics"""
+    conn = sqlite3.connect('poll_database.db')
+    c = conn.cursor()
+    
+    try:
+        # Get total count
+        c.execute("SELECT COUNT(*) FROM polls")
+        total = c.fetchone()[0]
+        
+        # Get voted count
+        c.execute("SELECT COUNT(*) FROM polls WHERE vote IS NOT NULL")
+        voted = c.fetchone()[0]
+        
+        # Get not voted count
+        not_voted = total - voted
+        
+        # Get vote breakdown
+        c.execute("SELECT vote, COUNT(*) FROM polls WHERE vote IS NOT NULL GROUP BY vote")
+        vote_breakdown = c.fetchall()
+        
+        print("\n=== CURRENT VOTING STATUS ===")
+        print(f"Total recipients: {total}")
+        print(f"Voted: {voted}")
+        print(f"Not voted yet: {not_voted}")
+        
+        if vote_breakdown:
+            print("\nVote breakdown:")
+            for vote_type, count in vote_breakdown:
+                print(f"  {vote_type}: {count}")
+        
+        print("=" * 30 + "\n")
+        
+    except Exception as e:
+        print(f"Error getting voting status: {str(e)}")
+    finally:
+        conn.close()
+
 def main():
+    parser = argparse.ArgumentParser(
+        description='Send poll emails or reminders',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python eazypoll.py                    # Send reminders to non-voters only
+  python eazypoll.py --all             # Send to all recipients
+  python eazypoll.py --status          # Show voting status only
+  python eazypoll.py --status --all    # Show status then send to all
+        """
+    )
+    
+    parser.add_argument(
+        '--all', 
+        action='store_true',
+        help='Send to all recipients (default: send reminders to non-voters only)'
+    )
+    
+    parser.add_argument(
+        '--status',
+        action='store_true',
+        help='Show current voting status before sending emails'
+    )
+    
+    args = parser.parse_args()
+    
     # Read configuration
     config = read_config()
-
-    # Your poll question
-    question = "Do you approve this proposal?"
-
+    
+    # Show status if requested
+    if args.status:
+        show_voting_status()
+    
+    # Determine what type of sending this is
+    if args.all:
+        print("Mode: Sending to ALL recipients")
+        is_reminder = False
+    else:
+        print("Mode: Sending REMINDERS to non-voters only")
+        is_reminder = True
+    
+    # Confirm before sending
+    try:
+        response = input("Do you want to proceed with sending emails? (y/n): ").lower().strip()
+        if response not in ['y', 'yes']:
+            print("Operation cancelled.")
+            sys.exit(0)
+    except KeyboardInterrupt:
+        print("\nOperation cancelled.")
+        sys.exit(0)
+    
     # Generate and send emails
-    generate_and_send_emails(question, config)
-
+    generate_and_send_emails(config, send_to_all=args.all, is_reminder=is_reminder)
+    
     print("Process completed!")
+    
+    # Show final status
+    if not args.status:  # Only show if we didn't show it already
+        show_voting_status()
 
 if __name__ == "__main__":
     main()
