@@ -9,12 +9,12 @@ try {
 
     // Validate token
     if (empty($token)) {
-        throw new Exception('Invalid token');
+        throw new Exception('Ongeldig token');
     }
 
     // Validate vote value
     if ($vote !== 'yes' && $vote !== 'no') {
-        throw new Exception('Illegal vote value. Only "yes" or "no" are allowed.');
+        throw new Exception('Je kan alleen "yes" (ja) of "no" (nee) stemmen.');
     }
 
     // Check if token exists and hasn't been used
@@ -23,7 +23,7 @@ try {
     $result = $stmt->execute()->fetchArray();
 
     if (!$result) {
-        throw new Exception('Invalid or expired token');
+        throw new Exception('dit token is onbekend of al eens gebruikt');
     }
 
     // Record the vote
