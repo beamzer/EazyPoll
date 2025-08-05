@@ -178,6 +178,20 @@ def show_voting_status():
         conn.close()
 
 def main():
+    # Check if config.ini exists first
+    config_file = 'config.ini'
+    if not os.path.exists(config_file):
+        print(f"Error: Configuration file '{config_file}' not found.")
+        print("Please ensure config.ini exists in the current directory.")
+        exit(1)
+    
+    # Check if poll database exists
+    poll_db_file = 'poll_database.db'
+    if not os.path.exists(poll_db_file):
+        print(f"Error: Poll database file '{poll_db_file}' not found.")
+        print("Please run create_poll_db.py to create the database first.")
+        exit(1)
+    
     parser = argparse.ArgumentParser(
         description='Send poll emails or reminders',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -203,15 +217,8 @@ Examples:
     
     args = parser.parse_args()
     
-    # Read configuration
+    # Read configuration (already validated config.ini exists)
     config = read_config()
-    
-    # Check if poll database exists
-    poll_db_file = 'poll_database.db'
-    if not os.path.exists(poll_db_file):
-        print(f"Error: Poll database file '{poll_db_file}' not found.")
-        print("Please run create_poll_db.py to create the database first.")
-        exit(1)
     
     # Always show status first
     show_voting_status()
