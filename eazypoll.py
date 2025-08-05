@@ -6,15 +6,41 @@ import configparser
 import time
 import argparse
 import sys
+import os
 
 def read_config():
     config = configparser.ConfigParser()
-    try:
-        config.read('config.ini')
-        return config
-    except Exception as e:
-        print(f'Error reading configuration: {str(e)}')
+    config_file = 'config.ini'
+    
+    if not os.path.exists(config_file):
+        print(f"Error: Configuration file '{config_file}' not found.")
+        print("Please ensure config.ini exists in the current directory.")
         exit(1)
+    
+    try:
+        config.read(config_file)
+    except Exception as e:
+        print(f"Error reading configuration file '{config_file}': {str(e)}")
+        exit(1)
+    
+    # Validate required sections and variables
+    required_sections = ['email', 'poll']
+    required_vars = {
+        'email': ['smtp_server', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_from_name', 'smtp_replyto'],
+        'poll': ['question', 'body_text', 'email_subject', 'base_url']
+    }
+    
+    for section in required_sections:
+        if section not in config:
+            print(f"Error: Missing required section '[{section}]' in {config_file}")
+            exit(1)
+            
+        for var in required_vars[section]:
+            if var not in config[section]:
+                print(f"Error: Missing required variable '{var}' in section '[{section}]' of {config_file}")
+                exit(1)
+    
+    return config
 
 def get_recipients(send_to_all=False):
     """Get recipients based on whether to send to all or only non-voters"""
