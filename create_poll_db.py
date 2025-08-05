@@ -89,11 +89,11 @@ def check_existing_database():
     return True
 
 def initialize_database():
+    # Read configuration (this will check for config.ini first)
+    config = read_config()
+    
     # Check for existing database and handle accordingly
     check_existing_database()
-    
-    # Read configuration
-    config = read_config()
     
     # Get email file path from config
     email_file = config['files']['recipients_file']
