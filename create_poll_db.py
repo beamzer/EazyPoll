@@ -4,6 +4,8 @@ from datetime import datetime
 import uuid
 import os
 
+POLL_DB_FILE = 'poll_database.db'
+
 def read_email_list(filename):
     try:
         with open(filename, 'r') as file:
@@ -18,7 +20,7 @@ def read_email_list(filename):
         exit(1)
 
 def create_database():
-    conn = sqlite3.connect('poll_database.db')
+    conn = sqlite3.connect(POLL_DB_FILE)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS polls
                  (token TEXT PRIMARY KEY,
@@ -63,9 +65,7 @@ def read_config():
 
 def check_existing_database():
     """Check if poll database file exists and handle accordingly"""
-    poll_db_file = 'poll_database.db'
-    
-    if os.path.exists(poll_db_file):
+    if os.path.exists(POLL_DB_FILE):
         print(f"Warning: Database file '{poll_db_file}' already exists!")
         print("This will delete all existing poll data including any votes that may have been cast.")
         
@@ -106,8 +106,7 @@ def initialize_database():
     create_database()
     
     # Initialize database with email addresses
-    poll_db_file = 'poll_database.db'
-    conn = sqlite3.connect(poll_db_file)
+    conn = sqlite3.connect(POLL_DB_FILE)
     c = conn.cursor()
 
     try:

@@ -8,6 +8,8 @@ import argparse
 import sys
 import os
 
+POLL_DB_FILE = 'poll_database.db'
+
 def read_config():
     config = configparser.ConfigParser()
     config_file = 'config.ini'
@@ -44,8 +46,7 @@ def read_config():
 
 def get_recipients(send_to_all=False):
     """Get recipients based on whether to send to all or only non-voters"""
-    poll_db_file = 'poll_database.db'
-    conn = sqlite3.connect(poll_db_file)
+    conn = sqlite3.connect(POLL_DB_FILE)
     c = conn.cursor()
     
     if send_to_all:
@@ -142,8 +143,7 @@ def generate_and_send_emails(config, send_to_all=False, is_reminder=False):
 
 def show_voting_status():
     """Show current voting statistics"""
-    poll_db_file = 'poll_database.db'
-    conn = sqlite3.connect(poll_db_file)
+    conn = sqlite3.connect(POLL_DB_FILE)
     c = conn.cursor()
     
     try:
@@ -188,8 +188,7 @@ def main():
         exit(1)
     
     # Check if poll database exists
-    poll_db_file = 'poll_database.db'
-    if not os.path.exists(poll_db_file):
+    if not os.path.exists(POLL_DB_FILE):
         print(f"Error: Poll database file '{poll_db_file}' not found.")
         print("Please run create_poll_db.py to create the database first.")
         exit(1)
