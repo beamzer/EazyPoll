@@ -226,8 +226,8 @@ Examples:
     
     # Confirm before sending
     try:
-        response = input("Do you want to proceed with sending emails? (y/n): ").lower().strip()
-        if response not in ['y', 'yes']:
+        response = input("Do you want to proceed with sending emails? (y/N): ").strip()
+        if response.lower() not in ['y', 'yes']:
             print("Operation cancelled.")
             sys.exit(0)
     except KeyboardInterrupt:
