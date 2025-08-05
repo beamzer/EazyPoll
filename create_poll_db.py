@@ -62,11 +62,11 @@ def read_config():
     return config
 
 def check_existing_database():
-    """Check if poll_database.db exists and handle accordingly"""
-    db_file = 'poll_database.db'
+    """Check if poll database file exists and handle accordingly"""
+    poll_db_file = 'poll_database.db'
     
-    if os.path.exists(db_file):
-        print(f"Warning: Database file '{db_file}' already exists!")
+    if os.path.exists(poll_db_file):
+        print(f"Warning: Database file '{poll_db_file}' already exists!")
         print("This will delete all existing poll data including any votes that may have been cast.")
         
         while True:
@@ -74,8 +74,8 @@ def check_existing_database():
             
             if response in ['y', 'yes']:
                 try:
-                    os.remove(db_file)
-                    print(f"Existing database '{db_file}' has been removed.")
+                    os.remove(poll_db_file)
+                    print(f"Existing database '{poll_db_file}' has been removed.")
                     return True
                 except Exception as e:
                     print(f"Error removing database file: {str(e)}")
@@ -104,9 +104,10 @@ def initialize_database():
 
     # Create database if it doesn't exist
     create_database()
-
+    
     # Initialize database with email addresses
-    conn = sqlite3.connect('poll_database.db')
+    poll_db_file = 'poll_database.db'
+    conn = sqlite3.connect(poll_db_file)
     c = conn.cursor()
 
     try:

@@ -44,7 +44,8 @@ def read_config():
 
 def get_recipients(send_to_all=False):
     """Get recipients based on whether to send to all or only non-voters"""
-    conn = sqlite3.connect('poll_database.db')
+    poll_db_file = 'poll_database.db'
+    conn = sqlite3.connect(poll_db_file)
     c = conn.cursor()
     
     if send_to_all:
@@ -141,7 +142,8 @@ def generate_and_send_emails(config, send_to_all=False, is_reminder=False):
 
 def show_voting_status():
     """Show current voting statistics"""
-    conn = sqlite3.connect('poll_database.db')
+    poll_db_file = 'poll_database.db'
+    conn = sqlite3.connect(poll_db_file)
     c = conn.cursor()
     
     try:
