@@ -206,6 +206,13 @@ Examples:
     # Read configuration
     config = read_config()
     
+    # Check if poll database exists
+    poll_db_file = 'poll_database.db'
+    if not os.path.exists(poll_db_file):
+        print(f"Error: Poll database file '{poll_db_file}' not found.")
+        print("Please run create_poll_db.py to create the database first.")
+        exit(1)
+    
     # Always show status first
     show_voting_status()
     
