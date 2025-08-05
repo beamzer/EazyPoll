@@ -89,8 +89,8 @@ def generate_and_send_emails(config, send_to_all=False, is_reminder=False):
         # Connect to SMTP server
         print("Connecting to SMTP server...")
         server = smtplib.SMTP(smtp_server, smtp_port)
-        ## server.starttls()
-        ## server.login(smtp_username, smtp_password)
+        server.starttls()
+        server.login(smtp_username, smtp_password)
 
         base_url = config['poll']['base_url']
 
@@ -138,8 +138,11 @@ def generate_and_send_emails(config, send_to_all=False, is_reminder=False):
     except Exception as e:
         print(f"Error sending emails: {str(e)}")
     finally:
-        #server.quit()
-        print(f"")
+        try:
+            server.quit()
+        except:
+            pass
+        print("Email sending completed.")
 
 def show_voting_status():
     """Show current voting statistics"""
