@@ -189,7 +189,7 @@ def main():
     
     # Check if poll database exists
     if not os.path.exists(POLL_DB_FILE):
-        print(f"Error: Poll database file '{poll_db_file}' not found.")
+        print(f"Error: Poll database file '{POLL_DB_FILE}' not found.")
         print("Please run create_poll_db.py to create the database first.")
         exit(1)
     
