@@ -157,23 +157,22 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python eazypoll.py                    # Send reminders to non-voters only
+  python eazypoll.py                    # Show voting status and exit
+  python eazypoll.py --reminder        # Send reminders to non-voters only
   python eazypoll.py --all             # Send to all recipients
-  python eazypoll.py --status          # Show voting status only
-  python eazypoll.py --status --all    # Show status then send to all
         """
     )
     
     parser.add_argument(
         '--all', 
         action='store_true',
-        help='Send to all recipients (default: send reminders to non-voters only)'
+        help='Send poll emails to all recipients'
     )
     
     parser.add_argument(
-        '--status',
+        '--reminder',
         action='store_true',
-        help='Show current voting status before sending emails'
+        help='Send reminder emails to non-voters only'
     )
     
     args = parser.parse_args()
@@ -181,17 +180,23 @@ Examples:
     # Read configuration
     config = read_config()
     
-    # Show status if requested
-    if args.status:
-        show_voting_status()
+    # Always show status first
+    show_voting_status()
+    
+    # Default behavior: show status and exit
+    if not args.all and not args.reminder:
+        print("Use --reminder to send reminders to non-voters or --all to send to all recipients.")
+        sys.exit(0)
     
     # Determine what type of sending this is
     if args.all:
         print("Mode: Sending to ALL recipients")
         is_reminder = False
-    else:
+        send_to_all = True
+    elif args.reminder:
         print("Mode: Sending REMINDERS to non-voters only")
         is_reminder = True
+        send_to_all = False
     
     # Confirm before sending
     try:
@@ -204,13 +209,12 @@ Examples:
         sys.exit(0)
     
     # Generate and send emails
-    generate_and_send_emails(config, send_to_all=args.all, is_reminder=is_reminder)
+    generate_and_send_emails(config, send_to_all=send_to_all, is_reminder=is_reminder)
     
     print("Process completed!")
     
     # Show final status
-    if not args.status:  # Only show if we didn't show it already
-        show_voting_status()
+    show_voting_status()
 
 if __name__ == "__main__":
     main()
